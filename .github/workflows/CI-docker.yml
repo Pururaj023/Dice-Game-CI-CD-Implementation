@@ -1,0 +1,26 @@
+name: Test and Build Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-docker-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Build Docker Image
+        run: docker build -t react-dice-game ./dice-game
+      
+      - name: Run Docker Container
+        run: docker run -d -p 3000:3000 --name dice-game-container react-dice-game
+      
+      - name: Test Application
+        run: |
+          sleep 10  # Wait for the container to start
+          curl -f http://localhost:3000 || exit 1
+
