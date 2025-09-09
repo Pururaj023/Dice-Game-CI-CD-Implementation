@@ -17,10 +17,10 @@ jobs:
         run: docker build -t react-dice-game ./dice-game
       
       - name: Run Docker Container
-        run: docker run -d -p 3000:3000 --name dice-game-container react-dice-game
+        run: docker run -d -p 80:80 --name dice-game-container react-dice-game
       
       - name: Test Application
         run: |
           sleep 10  # Wait for the container to start
-          curl -f http://localhost:3000 || exit 1
+          curl -f http://localhost:80 || exit 1
 
