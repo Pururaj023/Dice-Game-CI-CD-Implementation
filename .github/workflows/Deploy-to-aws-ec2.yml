@@ -1,0 +1,32 @@
+name: Deploy to aws EC2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploysToEC2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2 instance
+        uses: easingthemes/ssh-deploy@v2.1.5
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          ARGS: "-rltgoDzvO --delete"
+          SOURCE: "dice-game/"
+          REMOTE_HOST: ${{ secrets.EC2_IP_ADDRESS }}
+          REMOTE_USER: ubuntu
+          TARGET: "/home/ubuntu/dice-game"
+
+      - name: Connect and run commands on EC2 instance
+        uses: appleboy/ssh-action@v1.1.0
+        with: 
+          host: ${{ secrets.EC2_IP_ADDRESS }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/dice-game
+            sudo docker-compose up -d --build
